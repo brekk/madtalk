@@ -1,0 +1,166 @@
+import Test from './test-component';
+export const testProp = 50;
+
+<div class="logo">
+<img src="https://madlib.space/assets/logo-white.svg" alt="Madlib" />
+</div>
+
+### A really cool language for really cool people
+
+---
+
+# An opinionated but entirely correct perspective
+
+If you've written JavaScript before, it has some **cool parts**, but it has a lot of **sloppy, messy, gross** parts. 
+
+If you've written TypeScript before, it tries to add _weak types_ to the aforementioned bucket of **sloppy gross** parts, and thus it is also mainly **sloppy and gross**, _but also_ it has the added benefit of a "type system" that needs help to be correct and you can't trust.
+
+Notes: Microsoft's governance has accelerated it towards the eventual outcome of all MS owned projects: widely-accepted, broadly used mainly garbage.
+
+---
+
+# "What if we added Haskell types to JS?"
+
+I posed this question (after a long discussion about the state of JS and the utility of functional programming, over several beers) to my buddy Arnaud Boeglin. We thought it would _probably_ be **pretty easy**, like a weekend project.
+
+This was sometime in late 2020. 😅
+
+---
+
+# Madlib, Today `v0.20.0`
+
+We've created a generic language which leverages HM types, is (currently) written in Haskell, can spit out JS for `node` or the browser, or `LLVM` / binary code. It comes with a considered set of tools and features out of the box:
+
+<div class="features">
+
+ - Language Server (and VSCode / Vim Plugins)
+ - Automatic formatter with near zero-configuration
+ - Built-in testing tools
+ - Flexible installation patterns (which afford private dependencies)
+ - Project generator
+ - Project packaging / bundling
+ - Automatic documentation generation
+ - A powerful (yet dangerous) means of affording an escape-hatch - _The Fence_
+ - Function composition
+ - Automatic currying with placeholders
+ - Typed holes
+ - Polymorphic `interface` design
+ - Algebraic Data Types (ADTs)
+ - Monadic
+ - Limited mutation
+
+</div>
+
+---
+
+# What are Haskell / Hindley-Milner types?
+
+Wikipedia says:
+
+<div class="quote">
+
+> A Hindley–Milner (HM) type system is a classical type system for the lambda calculus with parametric polymorphism. It is also known as Damas–Milner or Damas–Hindley–Milner. [...] Among HM's more notable properties are its completeness and its ability to infer the most general type of a given program without programmer-supplied type annotations or other hints. Algorithm W is an efficient type inference method in practice and has been successfully applied on large code bases, although it has a high theoretical complexity.
+
+</div>
+
+---
+
+# You talk pretty, but, do you know stuff?
+
+Cool theories, **nerds**! But what does it look like and why should I care?
+
+Let's start with the basics:
+
+```
+identity :: a -> a
+identity = (x) => x
+```
+
+Here the type definition (the abstract representation of parameter and return types) is specified with the `::` and the following line gives the actual implementation. `a` is "any type, called 'a', which both the type of the input and the output" &mdash; if you call `identity` with a concrete type, say an integer like `100`, then the inference algorithm will validate that it satisfies the definition: `Integer -> Integer`
+
+
+Notes: The type signature here demonstrates that parametric polyfoolery &mdash; You can "instantiate" it with a concrete type:
+
+```
+identity(100)
+```
+
+Internally the compiler validates that `Integer -> Integer` matches the abstract `a -> a` and _it does_!
+
+---
+
+# Let's see how it feels!
+
+Because looking at code without syntax highlighting nor concrete outputs is for the birds!
+
+---
+
+# Primitives
+
+```
+string = "Hey there"
+float = 1.34359
+integer = 2
+char = 'a'
+boolean = true
+```
+
+---
+
+# Less primitives
+
+```
+type Temperature = Celsius(Float) | Fahrenheit(Float) | Kelvin(Float)
+
+fToC :: Temperature -> Temperature
+fToC = (t) => where (t) {
+  Fahrenheit(f) => Celsius((f - 32) * (5 / 9))
+  _ => t
+}
+
+cToF :: Temperature -> Temperature
+cToF = (t) => where (t) {
+  Celsius(c) => Fahrenheit(c * (9/5) + 32)
+  _ => t
+}
+```
+
+---
+
+# Built-in types
+
+```
+import List from "List"
+import String from "String"
+import Maybe from "Maybe"
+import Either from "Either"
+import Wish from "Wish"
+```
+
+---
+
+# Types for a problem domain
+
+Uhhhhhhh, a customer is just a stranger in disguise?
+
+```
+type User = Customer(Integer, String)
+          | PotentialUser
+
+findById :: Integer -> List User -> User
+findById = (id, users) => List.filter(
+  where {
+    Customer(customerId, _) => customerId == id
+    PotentialUser => false
+  }
+)(users)
+```
+
+👆🏼 **This** isn't _quite right_, but let's try it out and see why!
+
+---
+
+# Questions?
+
+There's a lot of stuff we've built, but we're excited to build more and find more of our community.
+
